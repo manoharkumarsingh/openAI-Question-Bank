@@ -96,7 +96,7 @@ const Generate = (props) => {
         presence_penalty: 0,
       };
 
-      const secretKey = "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";
+      const secretKey = "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";
 
       await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
