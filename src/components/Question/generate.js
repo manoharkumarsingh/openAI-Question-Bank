@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import modal from "./questionTypeStructure";
 
 const Generate = (props) => {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ const Generate = (props) => {
   /**Options*/
   const QuestionType = [
     { name: "MCQ", id: 1 },
-    { name: "MCQ (Multiple Correct Answers)", id: 2 },
-    { name: "True/False", id: 3 },
+    // { name: "MCQ (Multiple Correct Answers)", id: 2 },
+    { name: "True or False", id: 3 },
     { name: "Fill in the blanks", id: 4 },
   ];
 
   let QuestionCount = [];
-  for (let i = 1; i <= 25; i++) {
+  for (let i = 1; i <= 5; i++) {
     QuestionCount.push({ name: i, id: i });
   }
 
@@ -26,6 +27,7 @@ const Generate = (props) => {
   };
 
   const readFile = (event) => {
+    setDescription("");
     setFileInfo(event.target.files[0]);
   };
 
@@ -49,55 +51,14 @@ const Generate = (props) => {
       props.getQuestionList([]);
       const payload = {
         model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Generate " +
-              questionCount +
-              " " +
-              questionType +
-              " question with answer based on the provided description.Format the response to provide a concise and clear explanation in array of object example me :" +
-              data +
-              ",  you:" +
-              JSON.stringify([
-                {
-                  ques: "string",
-                  ansOpt: [
-                    { ans: "string" },
-                    { ans: "string" },
-                    { ans: "string" },
-                    { ans: "string" },
-                  ],
-                  correctAns: [{ ans: "string" }],
-                },
-
-                {
-                  ques: "string",
-                  ansOpt: [
-                    { ans: "string" },
-                    { ans: "string" },
-                    { ans: "string" },
-                    { ans: "string" },
-                  ],
-                  correctAns: [{ ans: "string" }],
-                },
-              ]),
-          },
-          {
-            role: "user",
-            content: data,
-          },
-        ],
+        messages: modal.getMcqModal(questionCount, questionType, data),
         temperature: 1,
-        max_tokens: 256,
+        max_tokens: 1024,
         top_p: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
       };
-
-      const secretKey = "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";
-
+      const secretKey = "";
       await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -126,12 +87,12 @@ const Generate = (props) => {
   };
 
   const handleQuestionType = (e) => {
-    console.log(e.target.value);
     setQuestionType(e.target.value);
   };
   const handleQuestionCount = (e) => {
     setQuestionCount(e.target.value);
   };
+
   return (
     <div className="form-section">
       <div className="text-area">
@@ -152,9 +113,9 @@ const Generate = (props) => {
               id="getFile"
               style={{ display: "none" }}
             />
-            <button class="button button3" onClick={() => navigate(-1)}>
+            {/* <button class="button button3" onClick={() => navigate(-1)}>
               Go Back
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -163,7 +124,9 @@ const Generate = (props) => {
           name="story"
           placeholder="Type Description"
           ref={textareaRef}
+          value={description}
           onChange={(e) => setDescription(e.target.value)}
+          disabled={fileInfo && fileInfo.name ? true : false}
         />
 
         <div className="question-input-box">
@@ -195,7 +158,9 @@ const Generate = (props) => {
           </div>
         </div>
 
-        {questionType && questionType && description ? (
+        {questionType &&
+        questionType &&
+        (description || (fileInfo && fileInfo.name)) ? (
           <div className="generate-btn">
             <button
               class="button button3 submit"

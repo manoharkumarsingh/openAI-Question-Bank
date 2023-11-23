@@ -11,7 +11,6 @@ const GenerateWithQuestion = () => {
   };
 
   const getPrompt = (data) => {
-    console.log(data);
     setPrompt(data);
   };
   return (

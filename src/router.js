@@ -13,8 +13,9 @@ const RouterComp = () => {
       <div className="router-section">
         <Router>
           <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/generate" element={<GenerateWithQuestion />} />
+            <Route path="/" element={<GenerateWithQuestion />} />
+            {/* <Route path="/" element={<App />} /> */}
+            {/* <Route path="/generate" element={<GenerateWithQuestion />} /> */}
           </Routes>
         </Router>
       </div>
